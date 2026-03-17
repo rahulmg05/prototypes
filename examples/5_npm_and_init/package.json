@@ -1,0 +1,20 @@
+{
+  "name": "npm-init-example",
+  "version": "1.0.0",
+  "description": "An example demonstrating npm scripts and initialization",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Running tests...\" && node tests.js"
+  },
+  "keywords": [
+    "nodejs",
+    "quickstart"
+  ],
+  "author": "Quickstart Guide",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0"
+  }
+}
