@@ -5,3 +5,4 @@ package-lock.json
 **/package-lock.json
 examples/5_npm_and_init/node_modules/
 examples/5_npm_and_init/package-lock.json
+**/node_modules

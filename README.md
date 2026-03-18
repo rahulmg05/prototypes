@@ -10,10 +10,12 @@ Welcome to the Node.js and JavaScript quickstart guide. This repository is desig
    - Code Example: [`examples/2_operators_and_gotchas/index.js`](./examples/2_operators_and_gotchas/index.js)
 3. [Node.js Framework, Modules & APIs](./docs/3_nodejs_framework.md)
    - Code Example (ES Modules Deep Dive): [`examples/6_modules_deep_dive/`](./examples/6_modules_deep_dive/)
-   - Code Example (Express API): [`examples/3_nodejs_framework/`](./examples/3_nodejs_framework/)
-4. [Promises & Async/Await (In-Depth)](./docs/4_promises.md)
+   - Code Example (Legacy Express API): [`examples/3_nodejs_framework/`](./examples/3_nodejs_framework/)
+4. [Fastify: The Modern API Framework](./docs/6_fastify.md)
+   - Code Example (Fastify API): [`examples/7_fastify_api/`](./examples/7_fastify_api/)
+5. [Promises & Async/Await (In-Depth)](./docs/4_promises.md)
    - Code Example: [`examples/4_promises/index.js`](./examples/4_promises/index.js)
-5. [NPM, `package.json` & Initialization](./docs/5_npm_and_init.md)
+6. [NPM, `package.json` & Initialization](./docs/5_npm_and_init.md)
    - Code Example: [`examples/5_npm_and_init/`](./examples/5_npm_and_init/)
 
 ## How to use

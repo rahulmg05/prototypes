@@ -123,11 +123,11 @@ Node.js does not enforce a strict project structure like Maven or Gradle. A typi
 
 ## 3. Building an API
 
-To build an API, the most common framework is **Express.js**. It is very unopinionated and minimal. For a more Spring-like experience, teams often use **NestJS**.
+To build an API, the historically most common framework is **Express.js**. It is very unopinionated and minimal. However, in modern Node.js development, **Fastify** is the preferred choice for its incredible performance, built-in JSON schema validation, and native support for modern JavaScript `async/await` features.
 
-In Express, you define routes and handlers (middleware). A handler takes `req` (request) and `res` (response) objects.
+For a more Spring-like experience, teams often use **NestJS** (which actually runs Fastify under the hood!).
 
-[View the Express framework examples](../examples/3_nodejs_framework/)
+[View the modern Fastify tutorial here](./6_fastify.md) or see the [Legacy Express framework example](../examples/3_nodejs_framework/)
 
 ## 4. Initialization Scripts
 
