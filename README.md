@@ -12,9 +12,11 @@ Welcome to the Node.js and JavaScript quickstart guide. This repository is desig
    - Code Example (Fastify API): [`examples/7_fastify_api/`](./examples/7_fastify_api/)
 4. [Promises & Async/Await (In-Depth)](./docs/4_promises.md)
    - Code Example: [`examples/4_promises/index.js`](./examples/4_promises/index.js)
-5. [NPM, `package.json` & Initialization](./docs/5_npm_and_init.md)
+5. [Concurrency & Event Loop (Deep Dive)](./docs/7_concurrency_and_event_loop.md)
+   - Code Example: [`examples/8_concurrency/`](./examples/8_concurrency/)
+6. [NPM, `package.json` & Initialization](./docs/5_npm_and_init.md)
    - Code Example: [`examples/5_npm_and_init/`](./examples/5_npm_and_init/)
-6. [Modules & Imports Deep Dive](./docs/6_modules_deep_dive.md)
+7. [Modules & Imports Deep Dive](./docs/6_modules_deep_dive.md)
    - Code Example (ES Modules Deep Dive): [`examples/6_modules_deep_dive/`](./examples/6_modules_deep_dive/)
 
 ## How to use

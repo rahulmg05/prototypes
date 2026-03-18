@@ -9,6 +9,10 @@ export const getAllUsers = async () => {
   return users;
 };
 
+export const getUserById = async (id) => {
+  return users.find(u => u.id === Number(id));
+};
+
 export const createUser = async (userData) => {
   const newUser = {
     id: users.length + 1,

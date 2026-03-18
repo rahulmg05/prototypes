@@ -8,70 +8,121 @@
 2. **Schema Validation**: Fastify has built-in JSON Schema validation. This is equivalent to Java's `@Valid` or `@NotNull` annotations on DTOs. If a request payload is invalid, Fastify automatically rejects it before it even hits your controller.
 3. **First-Class `async/await`**: Fastify was built for modern JavaScript. You don't need callbacks or wrappers to handle async errors; you just `return` or `throw` inside an `async` function.
 
-## 2. Setting up Fastify
+## 2. Endpoint Construction
 
-Fastify is extremely easy to initialize. It returns an instance that you can use to register routes, plugins, and start the server.
+In Fastify, there are two ways to define an endpoint: the **Shorthand Declaration** and the **Full Route Declaration**.
+
+### Shorthand Declaration
+This is quick and similar to Express, providing methods for standard HTTP verbs (`.get`, `.post`, `.put`, `.delete`).
 
 ```javascript
-import Fastify from 'fastify';
-const fastify = Fastify({ logger: true });
-
-// A simple route
-fastify.get('/', async (request, reply) => {
-  return { hello: 'world' };
+// Method Signature: fastify.[method](url, [options], handler)
+fastify.get('/users', async (request, reply) => {
+  return [{ id: 1, name: "Alice" }];
 });
-
-// Start the server
-try {
-  await fastify.listen({ port: 3000 });
-} catch (err) {
-  fastify.log.error(err);
-  process.exit(1);
-}
 ```
 
-## 3. The Plugin System (Encapsulation)
-
-Fastify's core architectural principle is **Plugins**. Everything in Fastify (routes, database connections, utility functions) is a plugin.
-
-When you register a plugin using `fastify.register()`, you create a new encapsulated context. This means plugins cannot accidentally overwrite or conflict with each other's configurations, keeping your application scope clean.
+### Full Route Declaration
+This approach is preferred in larger applications because it keeps all configuration for a specific route (method, url, schema, preHandlers, handler) inside a single, declarative object. This feels very similar to configuring a Route Object or an annotated controller in Java.
 
 ```javascript
-import userRoutes from './routes/users.js';
-
-// The users routes will be prefixed with /api/users
-fastify.register(userRoutes, { prefix: '/api/users' });
+fastify.route({
+  method: 'GET',
+  url: '/users',
+  schema: { ... }, // Optional: JSON Schema for validation
+  preHandler: async (request, reply) => {
+    // Optional: Middleware (like checking auth tokens) executed before the handler
+  },
+  handler: async (request, reply) => {
+    // The main business logic
+    return [{ id: 1, name: "Alice" }];
+  }
+});
 ```
 
-## 4. Built-in Schema Validation
+## 3. Schema Validation (The DTO Equivalent)
 
-In Java, you create a DTO class to strictly define what an API payload should look like. In Fastify, you define a JSON Schema.
+In Java, you create a DTO class to strictly define what an API payload should look like. In Fastify, you define a **JSON Schema**.
 
-Fastify uses a library called `ajv` under the hood to compile your schema into highly optimized validation functions at startup.
+Fastify uses a library called `ajv` under the hood to compile your schema into highly optimized validation functions at startup. You can validate four different parts of an incoming request:
+
+1. `body`: The JSON payload (for POST/PUT).
+2. `querystring`: URL query parameters (e.g., `?search=alice&limit=10`).
+3. `params`: URL path parameters (e.g., `/users/:id`).
+4. `headers`: Custom HTTP headers.
+
+Furthermore, you can define a `response` schema. This is incredibly powerful: it acts as a "filter" that strips out any fields that are *not* defined in the schema, preventing accidental data leaks (like returning a password hash from the database). It also optimizes serialization performance by 2-3x!
 
 ```javascript
-// Define a DTO-like schema
 const userSchema = {
+  // Validate the incoming JSON body
   body: {
     type: 'object',
     required: ['name', 'age'],
     properties: {
-      name: { type: 'string' },
-      age: { type: 'number', minimum: 18 }
+      name: { type: 'string', minLength: 2 },
+      age: { type: 'number', minimum: 18 } // ajv handles type checking and constraints automatically
+    }
+  },
+  // Validate the URL parameters
+  params: {
+    type: 'object',
+    properties: {
+      id: { type: 'string', pattern: '^[0-9]+$' } // Regex validation!
+    }
+  },
+  // Format the OUTGOING response
+  response: {
+    // If we return a 200 OK, format it strictly like this
+    200: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        userId: { type: 'number' }
+      }
     }
   }
 };
-
-// Apply the schema to a route
-fastify.post('/users', { schema: userSchema }, async (request, reply) => {
-  // If we reach this point, we are GUARANTEED that request.body.name exists and age is >= 18.
-  const { name, age } = request.body;
-
-  // Fastify automatically sets Content-Type to application/json and serializes the return value
-  return { success: true, user: name };
-});
 ```
 
-If a user sends `{ "name": "Alice" }` without an age, Fastify will automatically intercept the request and return a `400 Bad Request` with a helpful error message explaining that `age` is required.
+## 4. Error Handling using Boom
+
+Fastify will automatically catch any `Error` thrown inside an `async` handler and return a `500 Internal Server Error`. However, returning standard HTTP errors (like `404 Not Found` or `401 Unauthorized`) can be tedious if you have to manage status codes manually.
+
+**`@hapi/boom`** is the industry standard utility library for creating HTTP-friendly error objects. It provides a simple API to generate standardized error payloads.
+
+While Boom works great, Fastify doesn't know about Boom objects natively. To make them work together beautifully, we define a **Global Error Handler** (`setErrorHandler`).
+
+```javascript
+import Boom from '@hapi/boom';
+
+// 1. Tell Fastify how to intercept errors globally
+fastify.setErrorHandler((error, request, reply) => {
+  // If the error was generated by Boom, it has an `isBoom` property
+  if (error.isBoom) {
+    // Extract the HTTP status code and standardized payload from Boom
+    reply.status(error.output.statusCode).send(error.output.payload);
+  } else {
+    // Fallback for standard Fastify errors (like Validation errors or unexpected crashes)
+    reply.send(error);
+  }
+});
+
+// 2. Simply throw Boom errors anywhere in your app!
+fastify.get('/files/:id', async (request, reply) => {
+  const file = await getFileFromDB(request.params.id);
+
+  if (!file) {
+    // This immediately stops execution and sends a perfectly formatted 404 JSON response to the user.
+    throw Boom.notFound(`File with ID ${request.params.id} does not exist`);
+  }
+
+  if (!user.hasAccess) {
+    throw Boom.forbidden('You do not have access to this file');
+  }
+
+  return file;
+});
+```
 
 [View the Fastify API Example](../examples/7_fastify_api/)
