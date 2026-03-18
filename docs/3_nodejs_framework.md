@@ -2,58 +2,109 @@
 
 Coming from a Java background (Spring Boot, etc.), Node.js takes a much more lightweight, unopinionated approach. Node.js is simply a runtime that lets you execute JavaScript outside the browser. Frameworks like Express, NestJS, or Koa provide the HTTP abstractions you need.
 
-## 1. Modules and the Import/Export Syntax
+## 1. Modules and the Import/Export Syntax (Deep Dive)
 
 In Java, every file is a Class, and you `import com.example.MyClass`. In JavaScript, a file is simply a Module. A Module can export one thing, many things, or nothing at all.
 
-Historically, Node.js used **CommonJS** (`require()` and `module.exports`). However, the standard is moving toward **ES Modules** (`import` and `export`). To use ES Modules, you must either set `"type": "module"` in your `package.json`, or use the `.mjs` file extension.
+Historically, Node.js used **CommonJS** (`require()` and `module.exports`). However, the standard is moving toward **ES Modules (ESM)** (`import` and `export`). To use ES Modules, you must either set `"type": "module"` in your `package.json`, or use the `.mjs` file extension.
 
-### Default vs Named Exports
+### The Mechanics of ES Modules
 
-This is the most confusing part for developers new to modern JS. There are two ways to export code from a file: **Default** and **Named**.
+ES Modules rely on an object-like structure under the hood. When a module exports things, it essentially creates a dictionary (an object) of exports.
 
-**1. Default Exports (One per file)**
-A file can have exactly one `default` export. This is similar to exporting the main Java Class of a file. When you import a default export, **you can name it whatever you want**.
+There are two primary ways to add items to this dictionary: **Named Exports** and **Default Exports**.
 
-```javascript
-// file: myService.js
-class MyService { ... }
-export default MyService; // The single default export
+#### 1. Named Exports (Many per file)
 
-// file: app.js
-// You don't use curly braces, and you can name the variable anything!
-import MyService from './myService.js';
-import TheService from './myService.js'; // This is exactly the same thing
-```
-
-**2. Named Exports (Many per file)**
-A file can have infinite named exports. When you import them, **you must use the exact name inside curly braces `{}`** (this is called Destructuring).
+When you use the `export` keyword before a variable or function, you are creating a "Named Export". You can have as many of these as you want in a single file.
 
 ```javascript
 // file: mathUtils.js
 export const add = (a, b) => a + b;
 export const subtract = (a, b) => a - b;
-
-// file: app.js
-// You MUST use the exact names 'add' and 'subtract' inside {}.
-import { add, subtract } from './mathUtils.js';
-
-// If you want to rename it locally, use the 'as' keyword:
-import { add as addition } from './mathUtils.js';
-
-// Or import EVERYTHING as a single object:
-import * as MathOps from './mathUtils.js';
-console.log(MathOps.add(1, 2));
 ```
 
-**3. Mixing them together**
-You often see both used at the same time. The default import comes first, followed by the named imports in braces.
+When importing these, you must use **Destructuring Syntax** (the curly braces `{}`). Because they are named exports, **you must use their exact original names**.
 
 ```javascript
-import React, { useState, useEffect } from 'react';
-// React is the default export.
-// useState and useEffect are named exports.
+// file: app.js
+import { add, subtract } from './mathUtils.js';
 ```
+
+**Can I change the name of a Named Export?**
+Yes. If the name conflicts with an existing variable in your file, you can use the `as` keyword to alias it:
+
+```javascript
+import { add as mathAdd, subtract as mathSubtract } from './mathUtils.js';
+console.log(mathAdd(5, 2)); // 7
+```
+
+#### 2. Default Exports (One per file)
+
+A module can have exactly *one* `default` export.
+
+```javascript
+// file: logger.js
+export default class Logger { ... }
+```
+
+**Why only one? And why can I import it with any name?**
+
+Under the hood, a `default` export is actually just a **Named Export that is literally named `default`**.
+
+When you write this:
+```javascript
+export default class Logger {}
+```
+
+The JavaScript engine internally treats it roughly like this:
+```javascript
+export const default = class Logger {}
+```
+
+Because `default` is a specially reserved keyword in ES Modules, the `import` syntax provides syntactic sugar for it. When you import without curly braces, you are implicitly telling JavaScript: *"Grab the export named `default` and assign it to this variable name."*
+
+```javascript
+// You don't use curly braces, and you can name the variable anything!
+import MyLogger from './logger.js';
+import BananaLogger from './logger.js'; // This is exactly the same thing.
+```
+
+If you *wanted* to, you could actually import a default export using curly braces by aliasing the reserved `default` word, though nobody does this in practice:
+```javascript
+import { default as BananaLogger } from './logger.js';
+```
+
+#### 3. Mixing Default and Named Exports
+
+It is very common for a module to export a primary "Default" entity (like a Class), along with several "Named" utility functions or constants.
+
+```javascript
+// file: database.js
+export const DB_URL = "localhost:5432";
+export const DB_USER = "admin";
+
+export default class DatabaseClient { ... }
+```
+
+You can import them all on a single line. The default import comes first (outside braces), followed by a comma, and then the named imports (inside braces).
+
+```javascript
+import DatabaseClient, { DB_URL, DB_USER } from './database.js';
+```
+
+#### 4. The Namespace Import
+
+Sometimes a file has 50 named exports, and you don't want to list them all in curly braces. You can import the *entire* module object into a single namespace variable using `* as Name`.
+
+```javascript
+import * as db from './database.js';
+
+console.log(db.DB_URL);
+const client = new db.default(); // Notice how the default export is just a property!
+```
+
+[View the deep dive module examples](../examples/6_modules_deep_dive/)
 
 ## 2. Project Structure
 
@@ -76,6 +127,8 @@ To build an API, the most common framework is **Express.js**. It is very unopini
 
 In Express, you define routes and handlers (middleware). A handler takes `req` (request) and `res` (response) objects.
 
+[View the Express framework examples](../examples/3_nodejs_framework/)
+
 ## 4. Initialization Scripts
 
 Node.js applications start from a single entry file (e.g., `index.js`). Any setup code (database connections, reading config files) is usually placed at the top of this file, executed synchronously before calling the function that starts listening for HTTP requests.
@@ -87,5 +140,3 @@ We define scripts in `package.json`:
   "dev": "nodemon src/index.js" // nodemon watches for file changes
 }
 ```
-
-[View Examples](../examples/3_nodejs_framework/)

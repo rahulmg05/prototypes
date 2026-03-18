@@ -1,0 +1,10 @@
+{
+  "name": "modules-deep-dive",
+  "version": "1.0.0",
+  "description": "An exhaustive example of ES Modules imports and exports",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node app.js"
+  }
+}
