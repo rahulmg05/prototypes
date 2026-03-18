@@ -1,12 +1,12 @@
 # Fastify: The Modern Node.js Framework
 
-While Express.js is historically the most popular Node.js web framework, **Fastify** has emerged as the modern standard for building high-performance APIs. If you are coming from Java/Spring Boot, Fastify will feel much more structured, performant, and safe.
+**Fastify** has emerged as the modern standard for building high-performance APIs in Node.js. If you are coming from Java/Spring Boot, Fastify will feel highly structured, performant, and safe.
 
-## 1. Why Fastify instead of Express?
+## 1. Why Fastify?
 
-1. **Performance**: Fastify is significantly faster than Express, capable of handling tens of thousands of requests per second out-of-the-box due to its optimized routing and JSON serialization engines.
+1. **Performance**: Fastify is incredibly fast, capable of handling tens of thousands of requests per second out-of-the-box due to its optimized routing and JSON serialization engines.
 2. **Schema Validation**: Fastify has built-in JSON Schema validation. This is equivalent to Java's `@Valid` or `@NotNull` annotations on DTOs. If a request payload is invalid, Fastify automatically rejects it before it even hits your controller.
-3. **First-Class `async/await`**: Fastify was built for modern JavaScript. You don't need `next()` callbacks or wrappers to handle async errors; you just `return` or `throw` inside an `async` function.
+3. **First-Class `async/await`**: Fastify was built for modern JavaScript. You don't need callbacks or wrappers to handle async errors; you just `return` or `throw` inside an `async` function.
 
 ## 2. Setting up Fastify
 
@@ -34,7 +34,7 @@ try {
 
 Fastify's core architectural principle is **Plugins**. Everything in Fastify (routes, database connections, utility functions) is a plugin.
 
-When you register a plugin using `fastify.register()`, you create a new encapsulated context. This means plugins cannot accidentally overwrite or conflict with each other's configurations, unlike Express middleware which is globally polluting.
+When you register a plugin using `fastify.register()`, you create a new encapsulated context. This means plugins cannot accidentally overwrite or conflict with each other's configurations, keeping your application scope clean.
 
 ```javascript
 import userRoutes from './routes/users.js';

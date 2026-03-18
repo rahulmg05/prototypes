@@ -1,20 +1,16 @@
-# Node.js Framework, Modules & APIs
-
-Coming from a Java background (Spring Boot, etc.), Node.js takes a much more lightweight, unopinionated approach. Node.js is simply a runtime that lets you execute JavaScript outside the browser. Frameworks like Express, NestJS, or Koa provide the HTTP abstractions you need.
-
-## 1. Modules and the Import/Export Syntax (Deep Dive)
+# Modules & Imports Deep Dive
 
 In Java, every file is a Class, and you `import com.example.MyClass`. In JavaScript, a file is simply a Module. A Module can export one thing, many things, or nothing at all.
 
 Historically, Node.js used **CommonJS** (`require()` and `module.exports`). However, the standard is moving toward **ES Modules (ESM)** (`import` and `export`). To use ES Modules, you must either set `"type": "module"` in your `package.json`, or use the `.mjs` file extension.
 
-### The Mechanics of ES Modules
+## The Mechanics of ES Modules
 
 ES Modules rely on an object-like structure under the hood. When a module exports things, it essentially creates a dictionary (an object) of exports.
 
 There are two primary ways to add items to this dictionary: **Named Exports** and **Default Exports**.
 
-#### 1. Named Exports (Many per file)
+### 1. Named Exports (Many per file)
 
 When you use the `export` keyword before a variable or function, you are creating a "Named Export". You can have as many of these as you want in a single file.
 
@@ -39,7 +35,7 @@ import { add as mathAdd, subtract as mathSubtract } from './mathUtils.js';
 console.log(mathAdd(5, 2)); // 7
 ```
 
-#### 2. Default Exports (One per file)
+### 2. Default Exports (One per file)
 
 A module can have exactly *one* `default` export.
 
@@ -75,7 +71,7 @@ If you *wanted* to, you could actually import a default export using curly brace
 import { default as BananaLogger } from './logger.js';
 ```
 
-#### 3. Mixing Default and Named Exports
+### 3. Mixing Default and Named Exports
 
 It is very common for a module to export a primary "Default" entity (like a Class), along with several "Named" utility functions or constants.
 
@@ -93,7 +89,7 @@ You can import them all on a single line. The default import comes first (outsid
 import DatabaseClient, { DB_URL, DB_USER } from './database.js';
 ```
 
-#### 4. The Namespace Import
+### 4. The Namespace Import
 
 Sometimes a file has 50 named exports, and you don't want to list them all in curly braces. You can import the *entire* module object into a single namespace variable using `* as Name`.
 
@@ -105,38 +101,3 @@ const client = new db.default(); // Notice how the default export is just a prop
 ```
 
 [View the deep dive module examples](../examples/6_modules_deep_dive/)
-
-## 2. Project Structure
-
-Node.js does not enforce a strict project structure like Maven or Gradle. A typical robust application might look like this:
-
-```
-├── package.json           // Project metadata and dependencies
-├── src/
-│   ├── index.js           // Entry point
-│   ├── routes/            // API Route definitions
-│   ├── controllers/       // Request handlers
-│   ├── services/          // Business logic
-│   └── models/            // Data models / DB Schemas
-└── tests/
-```
-
-## 3. Building an API
-
-To build an API, the historically most common framework is **Express.js**. It is very unopinionated and minimal. However, in modern Node.js development, **Fastify** is the preferred choice for its incredible performance, built-in JSON schema validation, and native support for modern JavaScript `async/await` features.
-
-For a more Spring-like experience, teams often use **NestJS** (which actually runs Fastify under the hood!).
-
-[View the modern Fastify tutorial here](./6_fastify.md) or see the [Legacy Express framework example](../examples/3_nodejs_framework/)
-
-## 4. Initialization Scripts
-
-Node.js applications start from a single entry file (e.g., `index.js`). Any setup code (database connections, reading config files) is usually placed at the top of this file, executed synchronously before calling the function that starts listening for HTTP requests.
-
-We define scripts in `package.json`:
-```json
-"scripts": {
-  "start": "node src/index.js",
-  "dev": "nodemon src/index.js" // nodemon watches for file changes
-}
-```

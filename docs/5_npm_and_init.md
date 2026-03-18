@@ -19,7 +19,7 @@ The `-y` flag answers "yes" to all the default questions. This generates a `pack
 This file is the heart of any Node project (similar to `pom.xml` in Maven or `build.gradle` in Gradle). It holds metadata relevant to the project, handles the project's dependencies, and defines npm scripts.
 
 ### Dependencies vs devDependencies
-- **Dependencies** (`npm install <package>`): Libraries required for the application to run in production (e.g., Express, Mongoose).
+- **Dependencies** (`npm install <package>`): Libraries required for the application to run in production (e.g., Fastify, Mongoose).
 - **devDependencies** (`npm install <package> --save-dev` or `-D`): Libraries only needed during local development or testing (e.g., Jest, Nodemon, TypeScript).
 
 ## 3. NPM Scripts
@@ -47,7 +47,7 @@ Instead, you specify an entry point in your `package.json` (often `"main": "inde
 A typical entry file does the following in order:
 1. Load environment variables (e.g., `dotenv`).
 2. Establish database connections.
-3. Configure the web server / middleware (Express).
+3. Configure the web server / plugins (Fastify).
 4. Start listening on a port.
 
 Because database connections are asynchronous, you often see the server start wrapped in an async function or a Promise `.then()` block to ensure the DB connects *before* the server accepts requests.
