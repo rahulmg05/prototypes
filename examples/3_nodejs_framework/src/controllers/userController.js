@@ -1,12 +1,15 @@
-import * as userService from '../services/userService.js';
+// We use named imports (the {} syntax) to import specific functions from the service
+import { getAllUsers, getUserById } from '../services/userService.js';
 
 export const getUsers = (req, res) => {
-    const users = userService.getAllUsers();
+    // Now we can use getAllUsers directly instead of prefixing it with a namespace
+    const users = getAllUsers();
     res.json(users);
 };
 
 export const getUser = (req, res) => {
-    const user = userService.getUserById(req.params.id);
+    // Using getUserById directly
+    const user = getUserById(req.params.id);
     if (user) {
         res.json(user);
     } else {
