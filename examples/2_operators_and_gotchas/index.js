@@ -70,3 +70,55 @@ console.log("'5' + 3 =", '5' + 3); // '53' (String concatenation)
 console.log("'5' - 3 =", '5' - 3); // 2 (Number subtraction)
 console.log("true + 1 =", true + 1); // 2 (true is coerced to 1)
 console.log("false + 1 =", false + 1); // 1 (false is coerced to 0)
+
+
+// 7. The `this` Keyword Gotchas
+console.log("\n--- 7. The `this` Keyword Gotchas ---");
+
+const myServer = {
+    port: 8080,
+
+    // 1. Implicit Binding: `this` points to the object it's called on
+    startServer: function() {
+        console.log(`[Method] Starting server on port ${this.port}`);
+    },
+
+    // 2. The Callback Bug (Losing `this`)
+    startWithDelayBug: function() {
+        // We pass the method directly as a callback to setTimeout
+        // When setTimeout eventually runs it, it executes it as a standalone function
+        // (Rule #4 - Default Binding), so `this` becomes undefined (in strict mode) or the global object!
+        setTimeout(function() {
+            try {
+                console.log(`[Buggy Callback] Starting server on port ${this.port}`);
+            } catch (e) {
+                console.log(`[Buggy Callback Error] ${e.message}`);
+            }
+        }, 100);
+    },
+
+    // 3. The Explicit Binding Solution (Pre-ES6)
+    startWithDelayBind: function() {
+        // We use .bind() to explicitly lock the `this` context to `myServer` before passing it to setTimeout
+        setTimeout(function() {
+            console.log(`[Bind Callback] Starting server on port ${this.port}`);
+        }.bind(this), 200);
+    },
+
+    // 4. The Modern Solution: Arrow Functions
+    startWithDelayArrow: function() {
+        // Arrow functions DO NOT have their own `this`. They inherit it lexically from the surrounding scope
+        // (which is the `startWithDelayArrow` method, where `this` correctly points to `myServer`).
+        setTimeout(() => {
+            console.log(`[Arrow Callback] Starting server on port ${this.port}`);
+        }, 300);
+    }
+};
+
+// Execute the `this` examples
+myServer.startServer();
+myServer.startWithDelayBug();
+myServer.startWithDelayBind();
+myServer.startWithDelayArrow();
+
+// Note: Because setTimeout is asynchronous, the outputs will appear a few hundred milliseconds later!
