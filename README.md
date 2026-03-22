@@ -18,6 +18,8 @@ Welcome to the Node.js and JavaScript quickstart guide. This repository is desig
    - Code Example: [`examples/8_concurrency/`](./examples/8_concurrency/)
 7. [Fastify: The Modern API Framework](./docs/7_fastify.md)
    - Code Example (Fastify API): [`examples/7_fastify_api/`](./examples/7_fastify_api/)
+8. [Exception Handling in Node.js](./docs/9_exception_handling.md)
+   - Code Example: [`examples/9_exception_handling/index.js`](./examples/9_exception_handling/index.js)
 
 ## How to use
 
