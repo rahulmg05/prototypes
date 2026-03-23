@@ -99,6 +99,31 @@ To fix this, ES2017 introduced `async` and `await`. This is syntactic sugar over
 - **`async` function**: Adding `async` before a function means the function will *always* return a Promise.
 - **`await` operator**: Can only be used inside an `async` function. It pauses the execution of that specific function until the awaited Promise is settled. It does *not* block the main JavaScript thread, it just yields control back to the event loop.
 
+### The Mechanics of `async` and `await`
+
+**1. The `async` Keyword (Automatic Wrapping)**
+When you place the word `async` in front of a function declaration, JavaScript guarantees two things:
+*   The function will **always** return a Promise.
+*   If your code explicitly returns a non-Promise value (like `return 5;`), JavaScript automatically wraps that value in a resolved Promise (`Promise.resolve(5)`).
+
+**2. The `await` Keyword (Pausing Execution)**
+The `await` keyword makes JavaScript wait until a Promise settles and returns its result.
+
+**Should `await` always be used on a function that returns a Promise?**
+*Technically*, no. *Logically*, yes.
+
+If you `await` a regular, non-Promise value (like a string or a number), JavaScript simply converts that value to a resolved Promise and immediately resolves it.
+
+```javascript
+// This is perfectly valid syntax, though practically useless:
+const result = await 42;
+console.log(result); // 42
+```
+
+However, the primary purpose of `await` is to pause the execution of an asynchronous task without blocking the main event loop. If the function you are calling does *not* return a Promise (e.g., a synchronous function like `Math.random()`), using `await` on it is an anti-pattern. It provides zero benefit and slightly degrades performance because V8 still has to schedule a Microtask to unwrap the value.
+
+**The Golden Rule:** Only use `await` when calling a function that performs an asynchronous operation (I/O, timers, network requests) and returns a Promise.
+
 ### Handling Errors
 Instead of `.catch()`, you use standard `try...catch` blocks, making it highly familiar to Java developers.
 

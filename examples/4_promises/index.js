@@ -90,6 +90,13 @@ setTimeout(() => {
             const user = await getUser(1);
             console.log("Async Success: Fetched User:", user.name);
 
+            // --- Awaiting Non-Promises ---
+            // The user asked: Should await always be on a function that returns a Promise?
+            // Technically, no. You can await a primitive value, and JS simply wraps it in a resolved Promise.
+            // However, this is an anti-pattern as it needlessly schedules a microtask.
+            const meaninglessAwait = await "I am a simple string!";
+            console.log("Awaited a non-Promise:", meaninglessAwait);
+
             // Wait for the posts
             const posts = await getPosts(user.id);
             console.log("Async Success: Fetched Posts:", posts.length);
