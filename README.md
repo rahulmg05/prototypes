@@ -20,6 +20,8 @@ Welcome to the Node.js and JavaScript quickstart guide. This repository is desig
    - Code Example (Fastify API): [`examples/7_fastify_api/`](./examples/7_fastify_api/)
 8. [Exception Handling in Node.js](./docs/9_exception_handling.md)
    - Code Example: [`examples/9_exception_handling/index.js`](./examples/9_exception_handling/index.js)
+9. [Equality & Nullish Coalescing](./docs/10_equality_and_nullish.md)
+   - Code Example: [`examples/10_equality_and_nullish/index.js`](./examples/10_equality_and_nullish/index.js)
 
 ## How to use
 
